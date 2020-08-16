@@ -50,7 +50,9 @@ namespace TranslationFunction
             var _translatedText = string.Empty;
             var _srcSentLen = string.Empty;
             var _translatedSentLen = string.Empty;
-            Dictionary<string, string> translatedContent = new Dictionary<string, string>();
+            //Dictionary<string, string> translatedContent = new Dictionary<string, string>();
+            TranslationOutput[] output=null;
+
 
             foreach (TranslationResult transResult in deserializedOutput)
             {
@@ -65,10 +67,13 @@ namespace TranslationFunction
                     Console.Out.WriteLine("Translated to {0}: {1}", t.To, t.Text);
                    _translationLang = t.To;
                    _translatedText = t.Text;
-                    translatedContent.Add(_translationLang, _translatedText);
+                   // translatedContent.Add(_translationLang, _translatedText);
+                    output = new TranslationOutput[]
+                    { new TranslationOutput { toLang = _translationLang, translatedText = _translatedText } };
                 }
-            }            
-            return new OkObjectResult(translatedContent);
+            }
+            string response = JsonConvert.SerializeObject(output, Formatting.Indented);
+            return new OkObjectResult(response);
         }
 
         // This sample requires C# 7.1 or later for async/await.
@@ -97,6 +102,12 @@ namespace TranslationFunction
                 
             }
         }
+    }
+
+    public class TranslationOutput
+    {
+        public string toLang { get; set; }
+        public string translatedText { get; set; }
     }
 
     /// <summary>
