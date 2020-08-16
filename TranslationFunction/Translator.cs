@@ -27,7 +27,7 @@ namespace TranslationFunction
 
         [FunctionName("Translator")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
             
@@ -67,8 +67,7 @@ namespace TranslationFunction
                    _translatedText = t.Text;
                     translatedContent.Add(_translationLang, _translatedText);
                 }
-            }
-            //string responseMessage = $"Translation Lang:{_translationLang}; Translated Text:{_translatedText}";
+            }            
             return new OkObjectResult(translatedContent);
         }
 
