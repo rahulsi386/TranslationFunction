@@ -9,18 +9,19 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace TranslationFunction
 {
     public static class Translator
     {
-        private const string key_var = "ae35542591dc4cc1bff770732d575147";
-        //private static readonly string subscriptionKey = Environment.GetEnvironmentVariable(key_var);
-        private static readonly string subscriptionKey = key_var;
+        private const string key_var = "TRANSLATOR_TEXT_SUBSCRIPTION_KEY";
+        private static readonly string subscriptionKey = Environment.GetEnvironmentVariable(key_var);
+        //private static readonly string subscriptionKey = key_var;
 
-        private const string endpoint_var = "https://api.cognitive.microsofttranslator.com/";
-        //private static readonly string endpoint = Environment.GetEnvironmentVariable(endpoint_var);
-        private static readonly string endpoint = endpoint_var;
+        private const string endpoint_var = "TRANSLATOR_TEXT_ENDPOINT";
+        private static readonly string endpoint = Environment.GetEnvironmentVariable(endpoint_var);
+        //private static readonly string endpoint = endpoint_var;
 
         
 
@@ -49,6 +50,7 @@ namespace TranslationFunction
             var _translatedText = string.Empty;
             var _srcSentLen = string.Empty;
             var _translatedSentLen = string.Empty;
+            Dictionary<string, string> translatedContent = new Dictionary<string, string>();
 
             foreach (TranslationResult transResult in deserializedOutput)
             {
@@ -63,12 +65,11 @@ namespace TranslationFunction
                     Console.Out.WriteLine("Translated to {0}: {1}", t.To, t.Text);
                    _translationLang = t.To;
                    _translatedText = t.Text;
-                  // _srcSentLen = t.SentLen.SrcSentLen.ToString();
-                  // _translatedSentLen = t.SentLen.TransSentLen.ToString();
+                    translatedContent.Add(_translationLang, _translatedText);
                 }
             }
-            string responseMessage = $"Source Text:{_srcText}; Source TextLength:{_srcSentLen}; Source TextLang:{_detectedSrcLanguage}; Confidence Score:{_confidenceScore}; Translation Lang:{_translationLang}; Translated Text:{_translatedText}";
-            return new OkObjectResult(responseMessage);
+            //string responseMessage = $"Translation Lang:{_translationLang}; Translated Text:{_translatedText}";
+            return new OkObjectResult(translatedContent);
         }
 
         // This sample requires C# 7.1 or later for async/await.
