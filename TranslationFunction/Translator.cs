@@ -15,15 +15,19 @@ namespace TranslationFunction
 {
     public static class Translator
     {
-        private const string key_var = "TRANSLATOR_TEXT_SUBSCRIPTION_KEY";
-        private static readonly string subscriptionKey = Environment.GetEnvironmentVariable(key_var);
-        //private static readonly string subscriptionKey = key_var;
+        //private const string key_var = "TRANSLATOR_TEXT_SUBSCRIPTION_KEY";
+        //private static readonly string subscriptionKey = Environment.GetEnvironmentVariable(key_var);
 
-        private const string endpoint_var = "TRANSLATOR_TEXT_ENDPOINT";
-        private static readonly string endpoint = Environment.GetEnvironmentVariable(endpoint_var);
-        //private static readonly string endpoint = endpoint_var;
+        //private const string endpoint_var = "TRANSLATOR_TEXT_ENDPOINT";
+        //private static readonly string endpoint = Environment.GetEnvironmentVariable(endpoint_var);
 
-        
+        //Below four lines are used for only development & testing.
+        private const string key_var = "ae35542591dc4cc1bff770732d575147";
+        private static readonly string subscriptionKey = key_var;
+        private const string endpoint_var = "https://api.cognitive.microsofttranslator.com/";
+        private static readonly string endpoint = endpoint_var;
+
+
 
         [FunctionName("Translator")]
         public static async Task<IActionResult> Run(
@@ -31,13 +35,13 @@ namespace TranslationFunction
             ILogger log)
         {
             
-            string route = "translate?api-version=3.0&to=de&to=it&to=ja&to=th";
-            // Prompts you for text to translate. If you'd prefer, you can
-            // provide a string as textToTranslate.
+                    
                                   
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
-            string textToTranslate = data?.TextInput;            
+            string textToTranslate = data?.TextInput;
+            string translationLang = data?.TargetLang;
+            string route = $"translate?api-version=3.0&to={translationLang}";
             string translationResponse=await TranslateTextRequest(subscriptionKey, endpoint, route, textToTranslate);
             // Deserialize the response using the classes created earlier.
             TranslationResult[] deserializedOutput = JsonConvert.DeserializeObject<TranslationResult[]>(translationResponse);         
@@ -50,9 +54,8 @@ namespace TranslationFunction
             var _translatedText = string.Empty;
             var _srcSentLen = string.Empty;
             var _translatedSentLen = string.Empty;
-            //Dictionary<string, string> translatedContent = new Dictionary<string, string>();
-            TranslationOutput[] output=null;
-
+     
+            IList<TranslationOutput> output = new List<TranslationOutput>();
 
             foreach (TranslationResult transResult in deserializedOutput)
             {
@@ -66,14 +69,12 @@ namespace TranslationFunction
                 {
                     Console.Out.WriteLine("Translated to {0}: {1}", t.To, t.Text);
                    _translationLang = t.To;
-                   _translatedText = t.Text;
-                   // translatedContent.Add(_translationLang, _translatedText);
-                    output = new TranslationOutput[]
-                    { new TranslationOutput { toLang = _translationLang, translatedText = _translatedText } };
+                   _translatedText = t.Text;                  
+                    output.Add(new TranslationOutput { toLang = _translationLang, translatedText = _translatedText });                  
                 }
             }
-            string response = JsonConvert.SerializeObject(output, Formatting.Indented);
-            return new OkObjectResult(response);
+            //string response = JsonConvert.SerializeObject(output, Formatting.Indented);
+            return new OkObjectResult(output);
         }
 
         // This sample requires C# 7.1 or later for async/await.
@@ -97,9 +98,7 @@ namespace TranslationFunction
                 HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
                 // Read response as a string.
                 string result = await response.Content.ReadAsStringAsync();
-                return result;
-                
-                
+                return result;                                
             }
         }
     }
