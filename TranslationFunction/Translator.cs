@@ -70,7 +70,7 @@ namespace TranslationFunction
                     Console.Out.WriteLine("Translated to {0}: {1}", t.To, t.Text);
                    _translationLang = t.To;
                    _translatedText = t.Text;                  
-                    output.Add(new TranslationOutput { toLang = _translationLang, translatedText = _translatedText });                  
+                    output.Add(new TranslationOutput { toLang = _translationLang, translatedText = _translatedText, confidenceScore=_confidenceScore });                  
                 }
             }
             //string response = JsonConvert.SerializeObject(output, Formatting.Indented);
@@ -107,6 +107,7 @@ namespace TranslationFunction
     {
         public string toLang { get; set; }
         public string translatedText { get; set; }
+        public string confidenceScore { get; set; }
     }
 
     /// <summary>
