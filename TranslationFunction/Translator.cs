@@ -15,17 +15,17 @@ namespace TranslationFunction
 {
     public static class Translator
     {
-        //private const string key_var = "TRANSLATOR_TEXT_SUBSCRIPTION_KEY";
-        //private static readonly string subscriptionKey = Environment.GetEnvironmentVariable(key_var);
+        private const string key_var = "TRANSLATOR_TEXT_SUBSCRIPTION_KEY";
+        private static readonly string subscriptionKey = Environment.GetEnvironmentVariable(key_var);
 
-        //private const string endpoint_var = "TRANSLATOR_TEXT_ENDPOINT";
-        //private static readonly string endpoint = Environment.GetEnvironmentVariable(endpoint_var);
+        private const string endpoint_var = "TRANSLATOR_TEXT_ENDPOINT";
+        private static readonly string endpoint = Environment.GetEnvironmentVariable(endpoint_var);
 
         //Below four lines are used for only development & testing.
-        private const string key_var = "ae35542591dc4cc1bff770732d575147";
-        private static readonly string subscriptionKey = key_var;
-        private const string endpoint_var = "https://api.cognitive.microsofttranslator.com/";
-        private static readonly string endpoint = endpoint_var;
+        //private const string key_var = "ae35542591dc4cc1bff770732d575147";
+        //private static readonly string subscriptionKey = key_var;
+        //private const string endpoint_var = "https://api.cognitive.microsofttranslator.com/";
+        //private static readonly string endpoint = endpoint_var;
 
 
 
@@ -41,7 +41,7 @@ namespace TranslationFunction
             dynamic data = JsonConvert.DeserializeObject(requestBody);
             string textToTranslate = data?.TextInput;
             string translationLang = data?.TargetLang;
-            string route = $"translate?api-version=3.0&to={translationLang}";
+            string route = $"translate?api-version=3.0{translationLang}";
             string translationResponse=await TranslateTextRequest(subscriptionKey, endpoint, route, textToTranslate);
             // Deserialize the response using the classes created earlier.
             TranslationResult[] deserializedOutput = JsonConvert.DeserializeObject<TranslationResult[]>(translationResponse);         
