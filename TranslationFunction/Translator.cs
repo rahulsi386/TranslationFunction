@@ -33,10 +33,7 @@ namespace TranslationFunction
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
             ILogger log)
-        {
-            
-                    
-                                  
+        {                                                                  
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
             string textToTranslate = data?.TextInput;
